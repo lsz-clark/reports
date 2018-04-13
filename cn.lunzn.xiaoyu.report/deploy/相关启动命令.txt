@@ -1,0 +1,47 @@
+####################Æô¶¯elasticsearch########################
+
+#½øÈëelasticsearchµÄbinÄ¿Â¼
+cd /usr/local/sbin/software/elasticsearch-2.4.0/bin
+
+#Æô¶¯Ð¡Óã±¨±í·þÎñ
+./elasticsearch -d
+
+
+¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª
+
+
+####################Æô¶¯logstash############################
+
+#½øÈëlogstashÄ¿Â¼
+cd /usr/local/sbin/software/xiaoyu/logstash-5.6.2
+
+#Æô¶¯£¨ºóÌ¨ÔËÐÐ£©logstash
+nohup ./bin/logstash -f ./etc/xiaoyu.conf &
+
+
+¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª
+
+
+####################Æô¶¯filebeat############################
+
+#½øÈëfilebeatÄ¿Â¼
+cd /usr/local/sbin/software/xiaoyu/filebeat-xiaoyu-i-5.6.1
+
+#Æô¶¯£¨ºóÌ¨ÔËÐÐ£©filebeat
+nohup ./filebeat -e -c filebeat.yml &
+
+
+¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª
+
+
+
+####################Æô¶¯Ð¡Óã±¨±í·þÎñ########################
+
+#½øÈëxiaoyu-tomcatµÄbinÄ¿Â¼
+cd /usr/local/sbin/software/xiaoyu/xiaoyu-tomcat/bin
+
+#Æô¶¯Ð¡Óã±¨±í·þÎñ
+./startup.sh
+
+
+¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª
