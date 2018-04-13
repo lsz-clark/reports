@@ -1,0 +1,44 @@
+@CHARSET "UTF-8";
+.ak_checkout_talk_default{
+	font-size:12px;
+	z-index: 9999;
+    display: none;
+    background-color:#fff;
+    border:1px solid #ccc;
+	padding:5px;
+	position:absolute;
+	margin-bottom:20px;
+	-moz-border-radius:5px;
+    -webkit-border-radius:5px;
+    text-shadow:1px 1px 1px #ccc;
+    border-radius:5px;
+    min-width: 100px;
+    max-width:250px;
+    /* width:180px; */
+    word-wrap:break-word;
+    line-height:20px;
+    /* -webkit-box-shadow: 0 3px 3px rgba(0, 0, 0, 0.2);
+       -moz-box-shadow: 0 3px 3px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 3px 3px rgba(0, 0, 0, 0.2); */
+}
+
+.ak_checkout_talk_default:before{
+	z-index: 9999;
+	content:'';
+	width:8px;
+	height:8px;
+	position:absolute;
+	left:20px;
+	bottom:-5px;
+	background-color:#fff;
+	border:1px solid #ccc;
+	border-width: 0 2px 2px 0;
+	-webkit-transform:rotate(45deg);
+	-moz-transform:rotate(45deg);
+	-ms-transform:rotate(45deg);
+	-o-transform:rotate(45deg);
+	transform:rotate(45deg);
+	/* -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+       -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); */
+}

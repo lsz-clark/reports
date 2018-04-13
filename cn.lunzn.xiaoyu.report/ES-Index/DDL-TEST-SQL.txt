@@ -1,0 +1,2277 @@
+1、版本用户量分布
+>>>>>>>>>>>>>>>>>>> 查询所有版本号
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/user/_search" -d'
+{
+  "size" : 0,
+  "aggregations" : {
+    "appversion" : {
+      "terms" : {
+        "field" : "appversion",
+        "size" : 2147483647
+      }
+    }
+  }
+}'
+
+>>>>>>>>>>>>>>>>>>> apk注册量分布
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/user/_search" -d'
+{
+  "size" : 0,
+  "query" : {
+    "bool" : {
+      "must" : {
+        "range" : {
+          "logdate" : {
+            "from" : null,
+            "to" : "2017-10-15 23:59:59",
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "include_lower" : true,
+            "include_upper" : true
+          }
+        }
+      }
+    }
+  },
+  "aggregations" : {
+    "appversion" : {
+      "terms" : {
+        "field" : "appversion",
+        "size" : 2147483647
+      },
+      "aggregations" : {
+        "uuid" : {
+          "cardinality" : {
+            "field" : "uuid",
+            "precision_threshold" : 2147483647
+          }
+        }
+      }
+    }
+  }
+}'
+
+>>>>>>>>>>>>>>>>>>> 活跃用户版本分布
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/log/_search" -d'
+{
+  "size" : 0,
+  "query" : {
+    "bool" : {
+      "must" : {
+        "range" : {
+          "logdate" : {
+            "from" : "2017-10-15 00:00:00",
+            "to" : "2017-10-15 23:59:59",
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "include_lower" : true,
+            "include_upper" : true
+          }
+        }
+      },
+      "filter" : {
+        "match" : {
+          "interfaceName" : {
+            "query" : "/user/log_report",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      }
+    }
+  },
+  "aggregations" : {
+    "appversion" : {
+      "terms" : {
+        "field" : "appversion",
+        "size" : 2147483647
+      },
+      "aggregations" : {
+        "uuid" : {
+          "cardinality" : {
+            "field" : "uuid",
+            "precision_threshold" : 2147483647
+          }
+        }
+      }
+    }
+  }
+}'
+
+2、点播PV分布，根据三个PV获取所有mvid，然后查询影片表+影片分类表，获取影片名与影片分类
+>>>>>>>>>>>>>>>>>>> 统计请求PV
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/log/_search" -d'
+{
+  "size" : 0,
+  "query" : {
+    "bool" : {
+      "must" : {
+        "range" : {
+          "logdate" : {
+            "from" : "2017-10-15 00:00:00",
+            "to" : "2017-10-15 23:59:59",
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "include_lower" : true,
+            "include_upper" : true
+          }
+        }
+      },
+      "filter" : {
+        "match" : {
+          "interfaceName" : {
+            "query" : "/video/detail",
+            "type" : "boolean"
+          }
+        }
+      }
+    }
+  },
+  "aggregations" : {
+    "A" : {
+      "terms" : {
+        "field" : "A",
+        "size" : 2147483647
+      }
+    }
+  }
+}'
+
+>>>>>>>>>>>>>>>>>>> 统计点播PV
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/log/_search" -d'
+{
+  "size" : 0,
+  "query" : {
+    "bool" : {
+      "must" : {
+        "range" : {
+          "logdate" : {
+            "from" : "2017-10-15 00:00:00",
+            "to" : "2017-10-15 23:59:59",
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "include_lower" : true,
+            "include_upper" : true
+          }
+        }
+      },
+      "filter" : {
+        "prefix" : {
+          "interfaceName" : "/video/play"
+        }
+      }
+    }
+  },
+  "aggregations" : {
+    "A" : {
+      "terms" : {
+        "field" : "A",
+        "size" : 2147483647
+      }
+    }
+  }
+}'
+
+>>>>>>>>>>>>>>>>>>> 统计切换PV
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/log/_search" -d'
+{
+  "size" : 0,
+  "query" : {
+    "bool" : {
+      "must" : {
+        "range" : {
+          "logdate" : {
+            "from" : "2017-10-15 00:00:00",
+            "to" : "2017-10-15 23:59:59",
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "include_lower" : true,
+            "include_upper" : true
+          }
+        }
+      },
+      "filter" : {
+        "match" : {
+          "interfaceName" : {
+            "query" : "/video/switch",
+            "type" : "boolean"
+          }
+        }
+      }
+    }
+  },
+  "aggregations" : {
+    "A" : {
+      "terms" : {
+        "field" : "A",
+        "size" : 2147483647
+      }
+    }
+  }
+}'
+
+3、小鱼PV分布
+>>>>>>>>>>>>>>>>>>> PV占比 -- 日PV汇总
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/log/_search" -d'
+{
+  "size" : 0,
+  "query" : {
+    "bool" : {
+      "must" : {
+        "range" : {
+          "logdate" : {
+            "from" : "2017-10-15 00:00:00",
+            "to" : "2017-10-15 23:59:59",
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "include_lower" : true,
+            "include_upper" : true
+          }
+        }
+      }
+    }
+  }
+}'
+
+>>>>>>>>>>>>>>>>>>> PV占比 -- 直播PV，直播PV+回看PV+影片分类PV = 去业务PV，占比= 直播PV/去业务PV
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/log/_search" -d'
+{
+  "size" : 0,
+  "query" : {
+    "bool" : {
+      "must" : {
+        "range" : {
+          "logdate" : {
+            "from" : "2017-10-15 00:00:00",
+            "to" : "2017-10-15 23:59:59",
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "include_lower" : true,
+            "include_upper" : true
+          }
+        }
+      },
+      "filter" : {
+        "prefix" : {
+          "interfaceName" : "/tvlive/play"
+        }
+      }
+    }
+  },
+  "aggregations" : {
+    "interfaceName" : {
+      "terms" : {
+        "field" : "interfaceName",
+        "size" : 2147483647
+      }
+    }
+  }
+}'
+
+>>>>>>>>>>>>>>>>>>> PV占比 -- 回看PV，直播PV+回看PV+影片分类PV = 去业务PV，占比= 回看PV/去业务PV
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/log/_search" -d'
+{
+  "size" : 0,
+  "query" : {
+    "bool" : {
+      "must" : {
+        "range" : {
+          "logdate" : {
+            "from" : "2017-10-15 00:00:00",
+            "to" : "2017-10-15 23:59:59",
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "include_lower" : true,
+            "include_upper" : true
+          }
+        }
+      },
+      "filter" : {
+        "prefix" : {
+          "interfaceName" : "/repeat/play"
+        }
+      }
+    }
+  },
+  "aggregations" : {
+    "interfaceName" : {
+      "terms" : {
+        "field" : "interfaceName",
+        "size" : 2147483647
+      }
+    }
+  }
+}'
+
+>>>>>>>>>>>>>>>>>>> PV占比 -- 影片分类PV，直播PV+回看PV+影片分类PV = 去业务PV，占比= 分类PV/去业务PV，会查询小鱼一级分类表，获取所有影片分类，生成excel菜单
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/log/_search" -d'
+{
+  "size" : 0,
+  "query" : {
+    "bool" : {
+      "must" : {
+        "range" : {
+          "logdate" : {
+            "from" : "2017-11-06 00:00:00",
+            "to" : "2017-11-06 23:59:59",
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "include_lower" : true,
+            "include_upper" : true
+          }
+        }
+      },
+      "filter" : {
+        "prefix" : {
+          "interfaceName" : "/video/play"
+        }
+      }
+    }
+  },
+  "aggregations" : {
+    "B" : {
+      "terms" : {
+        "field" : "B",
+        "size" : 2147483647
+      }
+    }
+  }
+}'
+
+>>>>>>>>>>>>>>>>>>> 界面PV分布 -- 日PV汇总
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/log/_search" -d'
+{
+  "size" : 0,
+  "query" : {
+    "bool" : {
+      "must" : {
+        "range" : {
+          "logdate" : {
+            "from" : "2017-10-15 00:00:00",
+            "to" : "2017-10-15 23:59:59",
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "include_lower" : true,
+            "include_upper" : true
+          }
+        }
+      }
+    }
+  }
+}'
+
+>>>>>>>>>>>>>>>>>>> 界面PV分布 -- 心跳 /user/heart
+>>>>>>>>>>>>>>>>>>> 界面PV分布 -- 用户操作 /user/log_report
+>>>>>>>>>>>>>>>>>>> 界面PV分布 -- 升级 /sys/upgrade
+>>>>>>>>>>>>>>>>>>> 界面PV分布 -- 上报错误 /user/error_report
+>>>>>>>>>>>>>>>>>>> 界面PV分布 -- 登录 /user/login
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/log/_search" -d'
+{
+  "size" : 0,
+  "query" : {
+    "bool" : {
+      "must" : {
+        "range" : {
+          "logdate" : {
+            "from" : "2017-10-15 00:00:00",
+            "to" : "2017-10-15 23:59:59",
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "include_lower" : true,
+            "include_upper" : true
+          }
+        }
+      }
+    }
+  },
+  "aggregations" : {
+    "interfaceName" : {
+      "terms" : {
+        "field" : "interfaceName",
+        "size" : 2147483647
+      }
+    }
+  }
+}'
+
+>>>>>>>>>>>>>>>>>>> 界面PV分布 -- 所有界面PV
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/log/_search" -d'
+{
+  "size" : 0,
+  "query" : {
+    "bool" : {
+      "must" : {
+        "range" : {
+          "logdate" : {
+            "from" : "2017-10-15 00:00:00",
+            "to" : "2017-10-15 23:59:59",
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "include_lower" : true,
+            "include_upper" : true
+          }
+        }
+      },
+      "filter" : {
+        "match" : {
+          "interfaceName" : {
+            "query" : "/user/log_report",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      }
+    }
+  },
+  "aggregations" : {
+    "opToWin" : {
+      "terms" : {
+        "field" : "opToWin",
+        "size" : 2147483647
+      }
+    }
+  }
+}'
+
+>>>>>>>>>>>>>>>>>>> 所有请求分时，24小时请求PV情况，按小时聚合
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/log/_search" -d'
+{
+  "size" : 0,
+  "query" : {
+    "bool" : {
+      "must" : {
+        "range" : {
+          "logdate" : {
+            "from" : "2017-10-26 00:00:00",
+            "to" : "2017-10-26 23:59:59",
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "include_lower" : true,
+            "include_upper" : true
+          }
+        }
+      }
+    }
+  },
+  "aggregations" : {
+    "logdate" : {
+      "date_histogram" : {
+        "field" : "logdate",
+        "interval" : "1h"
+      }
+    }
+  }
+}'
+
+4、小鱼数据报表_汇总表单
+>>>>>>>>>>>>>>>>>>> 日升级下载
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/log/_search" -d'
+{
+  "size" : 0,
+  "query" : {
+    "bool" : {
+      "must" : {
+        "range" : {
+          "logdate" : {
+            "from" : "2017-10-15 00:00:00",
+            "to" : "2017-10-15 23:59:59",
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "include_lower" : true,
+            "include_upper" : true
+          }
+        }
+      },
+      "filter" : {
+        "match" : {
+          "interfaceName" : {
+            "query" : "/sys/upgrade",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      }
+    }
+  }
+}'
+
+>>>>>>>>>>>>>>>>>>> 日激活
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/user/_search" -d'
+{
+  "size" : 0,
+  "query" : {
+    "bool" : {
+      "must" : {
+        "range" : {
+          "logdate" : {
+            "from" : null,
+            "to" : "2017-10-15 23:59:59",
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "include_lower" : true,
+            "include_upper" : true
+          }
+        }
+      }
+    }
+  },
+  "aggregations" : {
+    "uuid" : {
+      "cardinality" : {
+        "field" : "uuid",
+        "precision_threshold" : 2147483647
+      }
+    }
+  }
+}'
+
+>>>>>>>>>>>>>>>>>>> 日活，日活/日开机
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/log/_search" -d'
+{
+  "size" : 0,
+  "query" : {
+    "bool" : {
+      "must" : {
+        "range" : {
+          "logdate" : {
+            "from" : "2017-10-15 00:00:00",
+            "to" : "2017-10-15 23:59:59",
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "include_lower" : true,
+            "include_upper" : true
+          }
+        }
+      },
+      "filter" : {
+        "match" : {
+          "interfaceName" : {
+            "query" : "/user/log_report",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      }
+    }
+  },
+  "aggregations" : {
+    "uuid" : {
+      "cardinality" : {
+        "field" : "uuid",
+        "precision_threshold" : 2147483647
+      }
+    }
+  }
+}'
+
+>>>>>>>>>>>>>>>>>>> 语音日活
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/log/_search" -d'
+{
+  "size" : 0,
+  "query" : {
+    "bool" : {
+      "must" : {
+        "range" : {
+          "logdate" : {
+            "from" : "2017-10-15 00:00:00",
+            "to" : "2017-10-15 23:59:59",
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "include_lower" : true,
+            "include_upper" : true
+          }
+        }
+      },
+      "filter" : [ {
+        "match" : {
+          "interfaceName" : {
+            "query" : "/user/log_report",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      }, {
+        "match" : {
+          "opCommandType" : {
+            "query" : "1",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      } ]
+    }
+  },
+  "aggregations" : {
+    "uuid" : {
+      "cardinality" : {
+        "field" : "uuid",
+        "precision_threshold" : 2147483647
+      }
+    }
+  }
+}'
+
+>>>>>>>>>>>>>>>>>>> 日开机，日开机/用户总量
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/log/_search" -d'
+{
+  "size" : 0,
+  "query" : {
+    "bool" : {
+      "must" : {
+        "range" : {
+          "logdate" : {
+            "from" : "2017-10-15 00:00:00",
+            "to" : "2017-10-15 23:59:59",
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "include_lower" : true,
+            "include_upper" : true
+          }
+        }
+      }
+    }
+  },
+  "aggregations" : {
+    "uuid" : {
+      "cardinality" : {
+        "field" : "uuid",
+        "precision_threshold" : 2147483647
+      }
+    }
+  }
+}'
+
+>>>>>>>>>>>>>>>>>>> 用户总量
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/user/_search" -d'
+{
+  "size" : 0,
+  "query" : {
+    "bool" : {
+      "must" : {
+        "range" : {
+          "logdate" : {
+            "from" : null,
+            "to" : "2017-10-15 23:59:59",
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "include_lower" : true,
+            "include_upper" : true
+          }
+        }
+      }
+    }
+  },
+  "aggregations" : {
+    "uuid" : {
+      "cardinality" : {
+        "field" : "uuid",
+        "precision_threshold" : 2147483647
+      }
+    }
+  }
+}'
+
+>>>>>>>>>>>>>>>>>>> 周活
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/log/_search" -d'
+{
+  "size" : 0,
+  "query" : {
+    "bool" : {
+      "must" : {
+        "range" : {
+          "logdate" : {
+            "from" : "2017-10-09 00:00:00",
+            "to" : "2017-10-15 23:59:59",
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "include_lower" : true,
+            "include_upper" : true
+          }
+        }
+      },
+      "filter" : {
+        "match" : {
+          "interfaceName" : {
+            "query" : "/user/log_report",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      }
+    }
+  },
+  "aggregations" : {
+    "uuid" : {
+      "cardinality" : {
+        "field" : "uuid",
+        "precision_threshold" : 2147483647
+      }
+    }
+  }
+}'
+
+>>>>>>>>>>>>>>>>>>> 语音周活
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/log/_search" -d'
+{
+  "size" : 0,
+  "query" : {
+    "bool" : {
+      "must" : {
+        "range" : {
+          "logdate" : {
+            "from" : "2017-10-09 00:00:00",
+            "to" : "2017-10-15 23:59:59",
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "include_lower" : true,
+            "include_upper" : true
+          }
+        }
+      },
+      "filter" : [ {
+        "match" : {
+          "interfaceName" : {
+            "query" : "/user/log_report",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      }, {
+        "match" : {
+          "opCommandType" : {
+            "query" : "1",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      } ]
+    }
+  },
+  "aggregations" : {
+    "uuid" : {
+      "cardinality" : {
+        "field" : "uuid",
+        "precision_threshold" : 2147483647
+      }
+    }
+  }
+}'
+
+>>>>>>>>>>>>>>>>>>> 月活
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/log/_search" -d'
+{
+  "size" : 0,
+  "query" : {
+    "bool" : {
+      "must" : {
+        "range" : {
+          "logdate" : {
+            "from" : "2017-10-01 00:00:00",
+            "to" : "2017-10-15 23:59:59",
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "include_lower" : true,
+            "include_upper" : true
+          }
+        }
+      },
+      "filter" : {
+        "match" : {
+          "interfaceName" : {
+            "query" : "/user/log_report",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      }
+    }
+  },
+  "aggregations" : {
+    "uuid" : {
+      "cardinality" : {
+        "field" : "uuid",
+        "precision_threshold" : 2147483647
+      }
+    }
+  }
+}'
+
+>>>>>>>>>>>>>>>>>>> 语音月活
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/log/_search" -d'
+{
+  "size" : 0,
+  "query" : {
+    "bool" : {
+      "must" : {
+        "range" : {
+          "logdate" : {
+            "from" : "2017-10-01 00:00:00",
+            "to" : "2017-10-15 23:59:59",
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "include_lower" : true,
+            "include_upper" : true
+          }
+        }
+      },
+      "filter" : [ {
+        "match" : {
+          "interfaceName" : {
+            "query" : "/user/log_report",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      }, {
+        "match" : {
+          "opCommandType" : {
+            "query" : "1",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      } ]
+    }
+  },
+  "aggregations" : {
+    "uuid" : {
+      "cardinality" : {
+        "field" : "uuid",
+        "precision_threshold" : 2147483647
+      }
+    }
+  }
+}'
+
+>>>>>>>>>>>>>>>>>>> 次日留存率   留存用户数/前天用户总数
+curl -XGET "http://192.168.30.248:9200/xiaoyu-log-stat/dayuser/_search" -d'
+{
+  "size" : 0,
+  "query" : {
+    "bool" : {
+      "must" : {
+        "range" : {
+          "logdate" : {
+            "from" : "2017-11-07 00:00:00",
+            "to" : "2017-11-08 23:59:59",
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "include_lower" : true,
+            "include_upper" : true
+          }
+        }
+      }
+    }
+  },
+  "aggregations" : {
+    "uuid" : {
+      "terms" : {
+        "field" : "uuid",
+        "size" : 2147483647
+      },
+      "aggregations" : {
+        "logdate" : {
+          "date_histogram" : {
+            "field" : "logdate",
+            "interval" : "1d"
+          }
+        }
+      }
+    }
+  }
+}'
+
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/log/_search" -d'
+{
+  "size" : 0,
+  "query" : {
+    "bool" : {
+      "must" : {
+        "range" : {
+          "logdate" : {
+            "from" : "2017-10-14 00:00:00",
+            "to" : "2017-10-14 23:59:59",
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "include_lower" : true,
+            "include_upper" : true
+          }
+        }
+      },
+      "filter" : {
+        "match" : {
+          "interfaceName" : {
+            "query" : "/user/log_report",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      }
+    }
+  },
+  "aggregations" : {
+    "uuid" : {
+      "cardinality" : {
+        "field" : "uuid",
+        "precision_threshold" : 2147483647
+      }
+    }
+  }
+}'
+
+>>>>>>>>>>>>>>>>>>> 3日留存率   留存用户数/2天前用户总数
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/log/_search" -d'
+{
+  "size" : 0,
+  "query" : {
+    "bool" : {
+      "must" : {
+        "range" : {
+          "logdate" : {
+            "from" : "2017-10-13 00:00:00",
+            "to" : "2017-10-15 23:59:59",
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "include_lower" : true,
+            "include_upper" : true
+          }
+        }
+      },
+      "filter" : {
+        "match" : {
+          "interfaceName" : {
+            "query" : "/user/log_report",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      }
+    }
+  },
+  "aggregations" : {
+    "uuid" : {
+      "terms" : {
+        "field" : "uuid",
+        "size" : 2147483647
+      },
+      "aggregations" : {
+        "logdate" : {
+          "date_histogram" : {
+            "field" : "logdate",
+            "interval" : "1d"
+          }
+        }
+      }
+    }
+  }
+}'
+
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/log/_search" -d'
+{
+  "size" : 0,
+  "query" : {
+    "bool" : {
+      "must" : {
+        "range" : {
+          "logdate" : {
+            "from" : "2017-10-13 00:00:00",
+            "to" : "2017-10-13 23:59:59",
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "include_lower" : true,
+            "include_upper" : true
+          }
+        }
+      },
+      "filter" : {
+        "match" : {
+          "interfaceName" : {
+            "query" : "/user/log_report",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      }
+    }
+  },
+  "aggregations" : {
+    "uuid" : {
+      "cardinality" : {
+        "field" : "uuid",
+        "precision_threshold" : 2147483647
+      }
+    }
+  }
+}'
+
+>>>>>>>>>>>>>>>>>>> 7日留存率   留存用户数/6天前用户总数
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/log/_search" -d'
+{
+  "size" : 0,
+  "query" : {
+    "bool" : {
+      "must" : {
+        "range" : {
+          "logdate" : {
+            "from" : "2017-10-09 00:00:00",
+            "to" : "2017-10-15 23:59:59",
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "include_lower" : true,
+            "include_upper" : true
+          }
+        }
+      },
+      "filter" : {
+        "match" : {
+          "interfaceName" : {
+            "query" : "/user/log_report",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      }
+    }
+  },
+  "aggregations" : {
+    "uuid" : {
+      "terms" : {
+        "field" : "uuid",
+        "size" : 2147483647
+      },
+      "aggregations" : {
+        "logdate" : {
+          "date_histogram" : {
+            "field" : "logdate",
+            "interval" : "1d"
+          }
+        }
+      }
+    }
+  }
+}'
+
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/log/_search" -d'
+{
+  "size" : 0,
+  "query" : {
+    "bool" : {
+      "must" : {
+        "range" : {
+          "logdate" : {
+            "from" : "2017-10-09 00:00:00",
+            "to" : "2017-10-09 23:59:59",
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "include_lower" : true,
+            "include_upper" : true
+          }
+        }
+      },
+      "filter" : {
+        "match" : {
+          "interfaceName" : {
+            "query" : "/user/log_report",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      }
+    }
+  },
+  "aggregations" : {
+    "uuid" : {
+      "cardinality" : {
+        "field" : "uuid",
+        "precision_threshold" : 2147483647
+      }
+    }
+  }
+}'
+
+>>>>>>>>>>>>>>>>>>> 30日留存率   留存用户数/29天前用户总数
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/log/_search" -d'
+{
+  "size" : 0,
+  "query" : {
+    "bool" : {
+      "must" : {
+        "range" : {
+          "logdate" : {
+            "from" : "2017-09-16 00:00:00",
+            "to" : "2017-10-15 23:59:59",
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "include_lower" : true,
+            "include_upper" : true
+          }
+        }
+      },
+      "filter" : {
+        "match" : {
+          "interfaceName" : {
+            "query" : "/user/log_report",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      }
+    }
+  },
+  "aggregations" : {
+    "uuid" : {
+      "terms" : {
+        "field" : "uuid",
+        "size" : 2147483647
+      },
+      "aggregations" : {
+        "logdate" : {
+          "date_histogram" : {
+            "field" : "logdate",
+            "interval" : "1d"
+          }
+        }
+      }
+    }
+  }
+}'
+
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/log/_search" -d'
+{
+  "size" : 0,
+  "query" : {
+    "bool" : {
+      "must" : {
+        "range" : {
+          "logdate" : {
+            "from" : "2017-09-16 00:00:00",
+            "to" : "2017-09-16 23:59:59",
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "include_lower" : true,
+            "include_upper" : true
+          }
+        }
+      },
+      "filter" : {
+        "match" : {
+          "interfaceName" : {
+            "query" : "/user/log_report",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      }
+    }
+  },
+  "aggregations" : {
+    "uuid" : {
+      "cardinality" : {
+        "field" : "uuid",
+        "precision_threshold" : 2147483647
+      }
+    }
+  }
+}'
+>>>>>>>>>>>>>>>>>>> 日PV
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/log/_search" -d'
+{
+  "size" : 0,
+  "query" : {
+    "bool" : {
+      "must" : {
+        "range" : {
+          "logdate" : {
+            "from" : "2017-10-15 00:00:00",
+            "to" : "2017-10-15 23:59:59",
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "include_lower" : true,
+            "include_upper" : true
+          }
+        }
+      }
+    }
+  }
+}'
+
+>>>>>>>>>>>>>>>>>>> 日语音交互次数
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/log/_search" -d'
+{
+  "size" : 0,
+  "query" : {
+    "bool" : {
+      "must" : {
+        "range" : {
+          "logdate" : {
+            "from" : "2017-10-15 00:00:00",
+            "to" : "2017-10-15 23:59:59",
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "include_lower" : true,
+            "include_upper" : true
+          }
+        }
+      },
+      "filter" : [ {
+        "match" : {
+          "interfaceName" : {
+            "query" : "/user/log_report",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      }, {
+        "match" : {
+          "opCommandType" : {
+            "query" : "1",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      } ]
+    }
+  }
+}'
+
+>>>>>>>>>>>>>>>>>>> 平均停留时长，累计计算每个用户的业务心跳，除以今日用户总量
+curl -XGET "http://192.168.30.248:9200/xiaoyu-inteface-log/log/_search" -d'
+{
+  "size" : 0,
+  "query" : {
+    "bool" : {
+      "must" : {
+        "range" : {
+          "logdate" : {
+            "from" : "2017-11-16 00:00:00",
+            "to" : "2017-11-16 23:59:59",
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "include_lower" : true,
+            "include_upper" : true
+          }
+        }
+      },
+      "filter" : [ {
+        "match" : {
+          "interfaceName" : {
+            "query" : "/user/heart",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      }, {
+        "match" : {
+          "A" : {
+            "query" : "",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      } ]
+    }
+  },
+  "aggregations" : {
+    "uuid" : {
+      "terms" : {
+        "field" : "uuid",
+        "size" : 2147483647
+      },
+      "aggregations" : {
+        "logdate" : {
+          "terms" : {
+            "field" : "logdate",
+            "size" : 2147483647
+          }
+        }
+      }
+    }
+  }
+}'
+
+7、小鱼渠道型号 -- 无需测试报表，日志中所有渠道盒子的终端型号deviceModel、终端内核版本kernelVsn
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/log/_search" -d'
+{
+  "size" : 0,
+  "aggregations" : {
+    "company" : {
+      "terms" : {
+        "field" : "company",
+        "size" : 2147483647
+      },
+      "aggregations" : {
+        "coversion" : {
+          "terms" : {
+            "field" : "coversion",
+            "size" : 2147483647
+          },
+          "aggregations" : {
+            "deviceModel" : {
+              "terms" : {
+                "field" : "deviceModel",
+                "size" : 2147483647
+              },
+              "aggregations" : {
+                "kernelVsn" : {
+                  "terms" : {
+                    "field" : "kernelVsn",
+                    "size" : 2147483647
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}'
+//--------------5、小鱼数据报表_渠道名称---------------
+// 先查出被使用的渠道
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/log/_search" -d'
+{
+  "size" : 0,
+  "sort" : [ {
+    "company" : {
+      "order" : "desc"
+    }
+  }, {
+    "coversion" : {
+      "order" : "desc"
+    }
+  } ],
+  "aggregations" : {
+    "company" : {
+      "terms" : {
+        "field" : "company",
+        "size" : 2147483647
+      },
+      "aggregations" : {
+        "coversion" : {
+          "terms" : {
+            "field" : "coversion",
+            "size" : 2147483647
+          }
+        }
+      }
+    }
+  }
+}'
+// 用户总量
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/log/_search" -d'
+{
+  "size" : 0,
+  "query" : {
+    "bool" : {
+      "must" : {
+        "range" : {
+          "logdate" : {
+            "from" : null,
+            "to" : "2017-10-26 23:59:59",
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "include_lower" : true,
+            "include_upper" : true
+          }
+        }
+      }
+    }
+  },
+  "aggregations" : {
+    "distinct_uuids" : {
+      "cardinality" : {
+        "field" : "uuid",
+        "precision_threshold" : 2147483647
+      }
+    }
+  }
+}'
+
+// 当日用户总量
+// 2017-10-25累计用户注册量
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/log/_search" -d'
+{
+  "size" : 0,
+  "query" : {
+    "bool" : {
+      "must" : {
+        "range" : {
+          "logdate" : {
+            "from" : null,
+            "to" : "2017-10-25 23:59:59",
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "include_lower" : true,
+            "include_upper" : true
+          }
+        }
+      }
+    }
+  },
+  "aggregations" : {
+    "distinct_uuids" : {
+      "cardinality" : {
+        "field" : "uuid",
+        "precision_threshold" : 2147483647
+      }
+    }
+  }
+}'
+
+// 2017-10-26累计用户注册量
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/log/_search" -d'
+{
+  "size" : 0,
+  "query" : {
+    "bool" : {
+      "must" : {
+        "range" : {
+          "logdate" : {
+            "from" : null,
+            "to" : "2017-10-26 23:59:59",
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "include_lower" : true,
+            "include_upper" : true
+          }
+        }
+      }
+    }
+  },
+  "aggregations" : {
+    "distinct_uuids" : {
+      "cardinality" : {
+        "field" : "uuid",
+        "precision_threshold" : 2147483647
+      }
+    }
+  }
+}'
+
+26新增的注册量=26号累计注册量-25号累计注册量
+
+// 渠道注册量
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/log/_search" -d'
+{
+  "size" : 0,
+  "query" : {
+    "bool" : {
+      "must" : {
+        "range" : {
+          "logdate" : {
+            "from" : null,
+            "to" : "2017-10-28 23:59:59",
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "include_lower" : true,
+            "include_upper" : true
+          }
+        }
+      },
+      "filter" : [ {
+        "match" : {
+          "company" : {
+            "query" : "YUBEIER",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      }, {
+        "match" : {
+          "coversion" : {
+            "query" : "W001",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      } ]
+    }
+  },
+  "aggregations" : {
+    "distinct_uuids" : {
+      "cardinality" : {
+        "field" : "uuid",
+        "precision_threshold" : 2147483647
+      }
+    }
+  }
+}'
+
+// 渠道的日活
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/log/_search" -d'
+{
+  "size" : 0,
+  "query" : {
+    "bool" : {
+      "must" : {
+        "range" : {
+          "logdate" : {
+            "from" : "2017-10-29 00:00:00",
+            "to" : "2017-10-29 23:59:59",
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "include_lower" : true,
+            "include_upper" : true
+          }
+        }
+      },
+      "filter" : [ {
+        "match" : {
+          "interfaceName" : {
+            "query" : "/user/log_report",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      }, {
+        "match" : {
+          "company" : {
+            "query" : "YUBEIER",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      }, {
+        "match" : {
+          "coversion" : {
+            "query" : "W001",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      } ]
+    }
+  },
+  "aggregations" : {
+    "distinct_uuids" : {
+      "cardinality" : {
+        "field" : "uuid",
+        "precision_threshold" : 2147483647
+      }
+    }
+  }
+}'
+
+
+//--------------6、小鱼数据报表_注册量汇总---------------
+// 生成渠道报表文件
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/log/_search" -d'
+{
+  "size" : 0,
+  "sort" : [ {
+    "company" : {
+      "order" : "desc"
+    }
+  }, {
+    "coversion" : {
+      "order" : "desc"
+    }
+  } ],
+  "aggregations" : {
+    "company" : {
+      "terms" : {
+        "field" : "company",
+        "size" : 2147483647
+      },
+      "aggregations" : {
+        "coversion" : {
+          "terms" : {
+            "field" : "coversion",
+            "size" : 2147483647
+          }
+        }
+      }
+    }
+  }
+}'
+
+// 日激活
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/log/_search" -d'
+{
+  "size" : 0,
+  "query" : {
+    "bool" : {
+      "must" : {
+        "range" : {
+          "logdate" : {
+            "from" : null,
+            "to" : "2017-10-25 23:59:59",
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "include_lower" : true,
+            "include_upper" : true
+          }
+        }
+      }
+    }
+  },
+  "aggregations" : {
+    "distinct_uuids" : {
+      "cardinality" : {
+        "field" : "uuid",
+        "precision_threshold" : 2147483647
+      }
+    }
+  }
+}'
+
+// 日活
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/log/_search" -d'
+{
+  "size" : 0,
+  "query" : {
+    "bool" : {
+      "must" : {
+        "range" : {
+          "logdate" : {
+            "from" : "2017-10-26 00:00:00",
+            "to" : "2017-10-26 23:59:59",
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "include_lower" : true,
+            "include_upper" : true
+          }
+        }
+      },
+      "filter" : [ {
+        "match" : {
+          "company" : {
+            "query" : "XIAOYU",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      }, {
+        "match" : {
+          "coversion" : {
+            "query" : "W004",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      } ]
+    }
+  },
+  "aggregations" : {
+    "distinct_uuids" : {
+      "cardinality" : {
+        "field" : "uuid",
+        "precision_threshold" : 2147483647
+      }
+    }
+  }
+}'
+
+// 语言日活
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/log/_search" -d'
+{
+  "size" : 0,
+  "query" : {
+    "bool" : {
+      "must" : {
+        "range" : {
+          "logdate" : {
+            "from" : "2017-10-26 00:00:00",
+            "to" : "2017-10-26 23:59:59",
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "include_lower" : true,
+            "include_upper" : true
+          }
+        }
+      },
+      "filter" : [ {
+        "match" : {
+          "company" : {
+            "query" : "XIAOYU",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      }, {
+        "match" : {
+          "coversion" : {
+            "query" : "W004",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      }, {
+        "match" : {
+          "interfaceName" : {
+            "query" : "/user/log_report",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      }, {
+        "match" : {
+          "opCommandType" : {
+            "query" : "1",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      } ]
+    }
+  },
+  "aggregations" : {
+    "distinct_uuids" : {
+      "cardinality" : {
+        "field" : "uuid",
+        "precision_threshold" : 2147483647
+      }
+    }
+  }
+}'
+
+// 日开机
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/log/_search" -d'
+{
+  "size" : 0,
+  "query" : {
+    "bool" : {
+      "must" : {
+        "range" : {
+          "logdate" : {
+            "from" : "2017-10-29 00:00:00",
+            "to" : "2017-10-29 23:59:59",
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "include_lower" : true,
+            "include_upper" : true
+          }
+        }
+      },
+      "filter" : [ {
+        "match" : {
+          "company" : {
+            "query" : "XIAOYU",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      }, {
+        "match" : {
+          "coversion" : {
+            "query" : "W004",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      } ]
+    }
+  },
+  "aggregations" : {
+    "distinct_uuids" : {
+      "cardinality" : {
+        "field" : "uuid",
+        "precision_threshold" : 2147483647
+      }
+    }
+  }
+}'
+
+// 用户总量
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/log/_search" -d'
+{
+  "size" : 0,
+  "query" : {
+    "bool" : {
+      "must" : {
+        "range" : {
+          "logdate" : {
+            "from" : null,
+            "to" : "2017-10-26 23:59:59",
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "include_lower" : true,
+            "include_upper" : true
+          }
+        }
+      }
+    }
+  },
+  "aggregations" : {
+    "distinct_uuids" : {
+      "cardinality" : {
+        "field" : "uuid",
+        "precision_threshold" : 2147483647
+      }
+    }
+  }
+}'
+
+// 周活
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/log/_search" -d'
+{
+  "size" : 0,
+  "query" : {
+    "bool" : {
+      "must" : {
+        "range" : {
+          "logdate" : {
+            "from" : "2017-10-23 00:00:00",
+            "to" : "2017-10-29 23:59:59",
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "include_lower" : true,
+            "include_upper" : true
+          }
+        }
+      },
+      "filter" : [ {
+        "match" : {
+          "company" : {
+            "query" : "XIAOYU",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      }, {
+        "match" : {
+          "coversion" : {
+            "query" : "W004",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      }, {
+        "match" : {
+          "interfaceName" : {
+            "query" : "/user/log_report",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      } ]
+    }
+  },
+  "aggregations" : {
+    "distinct_uuids" : {
+      "cardinality" : {
+        "field" : "uuid",
+        "precision_threshold" : 2147483647
+      }
+    }
+  }
+}'
+
+// 语音周活
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/log/_search" -d'
+{
+  "size" : 0,
+  "query" : {
+    "bool" : {
+      "must" : {
+        "range" : {
+          "logdate" : {
+            "from" : "2017-10-23 00:00:00",
+            "to" : "2017-10-29 23:59:59",
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "include_lower" : true,
+            "include_upper" : true
+          }
+        }
+      },
+      "filter" : [ {
+        "match" : {
+          "company" : {
+            "query" : "XIAOYU",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      }, {
+        "match" : {
+          "coversion" : {
+            "query" : "W004",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      }, {
+        "match" : {
+          "interfaceName" : {
+            "query" : "/user/log_report",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      }, {
+        "match" : {
+          "opCommandType" : {
+            "query" : "1",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      } ]
+    }
+  },
+  "aggregations" : {
+    "distinct_uuids" : {
+      "cardinality" : {
+        "field" : "uuid",
+        "precision_threshold" : 2147483647
+      }
+    }
+  }
+}'
+
+// 月活
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/log/_search" -d'
+{
+  "size" : 0,
+  "query" : {
+    "bool" : {
+      "must" : {
+        "range" : {
+          "logdate" : {
+            "from" : "2017-10-01 00:00:00",
+            "to" : "2017-10-29 23:59:59",
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "include_lower" : true,
+            "include_upper" : true
+          }
+        }
+      },
+      "filter" : [ {
+        "match" : {
+          "company" : {
+            "query" : "XIAOYU",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      }, {
+        "match" : {
+          "coversion" : {
+            "query" : "W004",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      }, {
+        "match" : {
+          "interfaceName" : {
+            "query" : "/user/log_report",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      } ]
+    }
+  },
+  "aggregations" : {
+    "distinct_uuids" : {
+      "cardinality" : {
+        "field" : "uuid",
+        "precision_threshold" : 2147483647
+      }
+    }
+  }
+}'
+
+// 语音月活
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/log/_search" -d'
+{
+  "size" : 0,
+  "query" : {
+    "bool" : {
+      "must" : {
+        "range" : {
+          "logdate" : {
+            "from" : "2017-10-01 00:00:00",
+            "to" : "2017-10-29 23:59:59",
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "include_lower" : true,
+            "include_upper" : true
+          }
+        }
+      },
+      "filter" : [ {
+        "match" : {
+          "company" : {
+            "query" : "XIAOYU",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      }, {
+        "match" : {
+          "coversion" : {
+            "query" : "W004",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      }, {
+        "match" : {
+          "interfaceName" : {
+            "query" : "/user/log_report",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      }, {
+        "match" : {
+          "opCommandType" : {
+            "query" : "1",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      } ]
+    }
+  },
+  "aggregations" : {
+    "distinct_uuids" : {
+      "cardinality" : {
+        "field" : "uuid",
+        "precision_threshold" : 2147483647
+      }
+    }
+  }
+}'
+
+// 留存率
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/log/_search" -d'
+{
+  "size" : 0,
+  "query" : {
+    "bool" : {
+      "must" : {
+        "range" : {
+          "logdate" : {
+            "from" : "2017-10-28 00:00:00",
+            "to" : "2017-10-29 23:59:59",
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "include_lower" : true,
+            "include_upper" : true
+          }
+        }
+      },
+      "filter" : [ {
+        "match" : {
+          "company" : {
+            "query" : "XIAOYU",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      }, {
+        "match" : {
+          "coversion" : {
+            "query" : "W004",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      }, {
+        "match" : {
+          "interfaceName" : {
+            "query" : "/user/log_report",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      } ]
+    }
+  },
+  "aggregations" : {
+    "uuid" : {
+      "terms" : {
+        "field" : "uuid",
+        "size" : 2147483647
+      },
+      "aggregations" : {
+        "logdate" : {
+          "date_histogram" : {
+            "field" : "logdate",
+            "interval" : "1d"
+          }
+        }
+      }
+    }
+  }
+}'
+
+留存率=一直使用小鱼的用户/N天前使用小鱼的用户总量
+
+// 日PV
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/log/_search" -d'
+{
+  "size" : 0,
+  "query" : {
+    "bool" : {
+      "must" : {
+        "range" : {
+          "logdate" : {
+            "from" : "2017-10-29 00:00:00",
+            "to" : "2017-10-29 23:59:59",
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "include_lower" : true,
+            "include_upper" : true
+          }
+        }
+      },
+      "filter" : [ {
+        "match" : {
+          "company" : {
+            "query" : "XIAOYU",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      }, {
+        "match" : {
+          "coversion" : {
+            "query" : "W004",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      } ]
+    }
+  },
+  "aggregations" : {
+    "count_uuid" : {
+      "value_count" : {
+        "field" : "uuid"
+      }
+    }
+  }
+}'
+ 
+// 日语音交互次数
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/user/_search" -d'
+{
+  "size" : 0,
+  "query" : {
+    "bool" : {
+      "must" : {
+        "range" : {
+          "logdate" : {
+            "from" : "2017-10-29 00:00:00",
+            "to" : "2017-10-29 23:59:59",
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "include_lower" : true,
+            "include_upper" : true
+          }
+        }
+      },
+      "filter" : [ {
+        "match" : {
+          "company" : {
+            "query" : "XIAOYU",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      }, {
+        "match" : {
+          "coversion" : {
+            "query" : "W001",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      }, {
+        "match" : {
+          "interfaceName" : {
+            "query" : "/user/log_report",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      }, {
+        "match" : {
+          "opCommandType" : {
+            "query" : "1",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      } ]
+    }
+  },
+  "aggregations" : {
+    "count_uuid" : {
+      "value_count" : {
+        "field" : "uuid"
+      }
+    }
+  }
+}'
+
+// 平均停留时长=所有用户停留时间/有心跳用户数量
+curl -XGET "http://192.168.30.253:9200/xiaoyu-inteface-log/log/_search" -d'
+{
+  "size" : 0,
+  "query" : {
+    "bool" : {
+      "must" : {
+        "range" : {
+          "logdate" : {
+            "from" : "2017-10-29 00:00:00",
+            "to" : "2017-10-29 23:59:59",
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "include_lower" : true,
+            "include_upper" : true
+          }
+        }
+      },
+      "filter" : [ {
+        "match" : {
+          "company" : {
+            "query" : "XIAOYU",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      }, {
+        "match" : {
+          "coversion" : {
+            "query" : "W001",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      }, {
+        "match" : {
+          "interfaceName" : {
+            "query" : "/user/heart",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      }, {
+        "match" : {
+          "A" : {
+            "query" : "",
+            "type" : "phrase",
+            "slop" : 0
+          }
+        }
+      } ]
+    }
+  },
+  "fields" : [ "uuid", "logdate" ],
+  "aggregations" : {
+    "uuid" : {
+      "terms" : {
+        "field" : "uuid",
+        "size" : 2147483647
+      },
+      "aggregations" : {
+        "logdate" : {
+          "terms" : {
+            "field" : "logdate"
+          }
+        }
+      }
+    }
+  }
+}'
+
+curl -XGET "http://192.168.30.248:9200/xiaoyu-inteface-log/log/_search" -d'
+{
+  "size" : 0,
+  "aggregations" : {
+    "company" : {
+      "terms" : {
+        "field" : "company",
+        "size" : 2147483647
+      },
+      "aggregations" : {
+        "coversion" : {
+          "terms" : {
+            "field" : "coversion",
+            "size" : 2147483647
+          },
+          "aggregations" : {
+            "deviceModel" : {
+              "terms" : {
+                "field" : "deviceModel",
+                "size" : 2147483647
+              },
+              "aggregations" : {
+                "kernelVsn" : {
+                  "terms" : {
+                    "field" : "kernelVsn",
+                    "size" : 2147483647
+                  },
+"aggregations" : {
+"uuid" : {
+"cardinality" : {
+"field" : "uuid",
+"precision_threshold" : 2147483647
+}
+}
+}
+}
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}'
+

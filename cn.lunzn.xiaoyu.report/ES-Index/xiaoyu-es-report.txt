@@ -1,0 +1,29 @@
+curl -XPOST "http://192.168.30.248:9200/xiaoyu-log-stat"
+
+curl -XPUT http://192.168.30.248:9200/xiaoyu-log-stat/_settings/ -d '{ "index" : { "max_result_window" : 2147483647}}'
+
+curl -XPOST "http://192.168.30.248:9200/xiaoyu-log-stat/report/_mapping?pretty" -d ' 
+{
+"report" : {
+    "properties" : {
+        "sendFlag" : {
+            "type" : "long"
+        },
+        "statDate" : {
+            "type" : "string",
+            "index" : "not_analyzed"
+        },
+        "buildFlag" : {
+            "type" : "long"
+        },
+        "sendDate" : {
+            "type" : "string",
+            "index" : "not_analyzed"
+        },
+        "reportFile" : {
+            "type" : "string",
+            "index" : "not_analyzed"
+        }
+    }
+}
+}'

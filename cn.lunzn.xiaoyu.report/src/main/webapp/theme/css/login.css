@@ -1,0 +1,30 @@
+body{
+	background-color: #f9fafb;
+}
+.bare-header {
+    background-image: none;
+    background-color: transparent;
+    padding: 10px 0 25px;
+    text-align: center;
+}
+
+.authform {
+    max-width: 500px;
+    margin: 0 auto;
+    border: 1px solid #dee0e3;
+    background-color: #FFF;
+    border-radius: 3px;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.small-tagline {
+    font-size: 12px;
+    color: #a5b7cc;
+    text-align: center;
+    line-height: 20px;
+    margin-top: 5px;
+}
+.text-center{
+	margin: 7.5px 0px;
+}

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- 审核电子流 -->
+<mapper namespace="cn.lunzn.xiaoyu.dao.MvReleaseCompanyDao">
+    
+	<resultMap type="cn.lunzn.xiaoyu.model.MvReleaseCompany"
+		id="company">
+		<!-- <result column="id" property="id" /> -->
+		<result column="id" property="id" />
+		<result column="company" property="company" />
+		<result column="coversion" property="coversion" />
+		<result column="version" property="version" />
+		<result column="account" property="account" />
+		<result column="password" property="password" />
+		<result column="amount" property="amount" />
+		<result column="access" property="access" />
+		<result column="cpuid" property="cpuid" />
+		<result column="urlpass" property="urlpass" />
+		<result column="summary" property="summary" />
+		<result column="state" property="state" />
+		<result column="remote" property="remote" />
+		<result column="versionflag" property="versionflag" />
+		<result column="offline" property="offline" />
+		<result column="forward" property="forward" />
+	</resultMap>
+	
+	<!-- 查询数据 -->
+	<select id="find" resultMap="company">
+		SELECT * FROM mv_release_company
+		<where>
+			<if test="company!=null">and company = #{company}</if>
+			<if test="coversion!=null">and coversion = #{coversion}</if>
+			<if test="version!=null">and version = #{version}</if>
+		</where>
+		ORDER BY coversion DESC
+	</select>
+	
+	<!-- 查询数据 ,渠道版本使用-->
+	<select id="findOne" resultMap="company">
+		SELECT * FROM mv_release_company where company = #{company} and coversion = #{coversion}
+		ORDER BY coversion DESC
+	</select>
+</mapper>

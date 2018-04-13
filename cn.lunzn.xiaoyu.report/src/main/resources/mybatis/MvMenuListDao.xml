@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.lunzn.xiaoyu.dao.MvMenuListDao">
+    
+	<resultMap type="cn.lunzn.xiaoyu.model.MvMenuList"
+		id="menu">
+		<!-- <result column="id" property="id" /> -->
+		<result column="id" property="id" />
+		<result column="mvid" property="mvid" />
+		<result column="mvname" property="mvname" />
+		<result column="volume" property="volume" />
+		<result column="key" property="key" />
+		<result column="index" property="index" />
+		<result column="topsort" property="topsort" />
+		<result column="times" property="times" />
+		<result column="mvtime" property="mvtime" />
+		<result column="addtime" property="addtime" />
+		<result column="imgpath" property="imgpath" />
+		<result column="bigimgpath" property="bigimgpath" />
+		<result column="introduction" property="introduction" />
+		<result column="summary" property="summary" />
+		<result column="language" property="language" />
+		<result column="updatevolume" property="updatevolume" />
+		<result column="isupd" property="isupd" />
+		<result column="definition" property="definition" />
+		<result column="refreshtime" property="refreshtime" />
+		<result column="doubanid" property="doubanid" />
+		<result column="uptime" property="uptime" />
+		<result column="cachetime" property="cachetime" />
+		<result column="resources" property="resources" />
+		<result column="groupid" property="topGroup.groupid" />
+		<result column="groupname" property="topGroup.groupname" />
+	</resultMap>
+	
+	<!-- 查询数据 -->
+	<!-- <select id="find" resultMap="menu">
+		SELECT * FROM mv_menu_list
+		WHERE 1 = 1
+		<if test="id!=null">and id = #{id}</if>
+		<if test="mvid!=null">and mvid = #{mvid}</if>
+		<if test="mvname!=null">and mvname = #{mvname}</if>
+	</select> -->
+	
+	<!-- 查询数据 -->
+	<select id="findGroup" resultMap="menu">
+		SELECT t.mvid,t.mvname,g.groupid,g.groupname FROM mv_menu_list t,mv_top_group g,mv_property_info p
+		WHERE t.mvid=p.mvid AND g.groupid = p.topgroup AND t.mvid = #{mvid}
+	</select>
+	
+	<!-- 查询数据，每次查询500个影片信息 -->
+	<select id="findGroups" resultMap="menu">
+		SELECT t.mvid,t.mvname,g.groupid,g.groupname FROM mv_menu_list t,mv_top_group g,mv_property_info p
+		WHERE t.mvid=p.mvid AND g.groupid = p.topgroup
+		<if test="null == list"> 1 = 2</if>
+		<if test="null != list"> AND t.mvid IN <foreach item="mvid" index="i" collection="list" open="(" separator="," close=")">#{mvid}</foreach></if>
+	</select>
+</mapper>

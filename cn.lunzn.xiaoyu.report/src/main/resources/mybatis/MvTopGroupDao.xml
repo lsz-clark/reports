@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.lunzn.xiaoyu.dao.MvTopGroupDao">
+    
+	<resultMap type="cn.lunzn.xiaoyu.model.MvTopGroup"
+		id="group">
+		<result column="id" property="id" />
+		<result column="groupid" property="groupid" />
+		<result column="groupname" property="groupname" />
+		<result column="index" property="index" />
+		<result column="imgpath" property="imgpath" />
+		<result column="state" property="state" />
+		<result column="summary" property="summary" />
+	</resultMap>
+	
+	<!-- 查询数据 -->
+	<select id="find" resultMap="group">
+		SELECT * FROM mv_top_group
+		WHERE 1 = 1
+		<if test="id!=null">and id = #{id}</if>
+		<if test="groupid!=null">and groupid = #{groupid}</if>
+		<if test="groupname!=null">and groupname = #{groupname}</if>
+	</select>
+</mapper>

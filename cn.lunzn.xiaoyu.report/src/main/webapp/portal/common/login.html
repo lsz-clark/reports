@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>登录 - 岚正(LUNZN)科技</title>
+<script type="text/javascript" src="../../theme/3party/js/jquery-3.2.1.min.js"></script>
+
+<script type="text/javascript" src="../../theme/js/common.js"></script>
+
+<link rel="stylesheet" href="../../theme/css/login.css">
+<script type="text/javascript" src="login.js"></script>
+</head>
+<body>
+	<header class="bare-header">
+		<div>
+			<!-- <img src="/images/app/Steer-logo.png" srcset="/images/app/Steer-logo.png 1x, /images/app/Steer-logo@2x.png 2x" alt="Steer logo"> -->
+		</div>
+		<h2 id="goHome" style="cursor: pointer;" class="i18n-text">lunzn</h2>
+		<!-- <div class="small-tagline i18n-text">mystyle_team</div> -->
+	</header>
+
+	<div class="authform">
+		
+		<div class="text-center">
+			<span class="i18n-text small-tagline">do_not_have_an_account</span> <a href="#" class="i18n-text">sign_up</a>
+		</div>
+
+		<div class="form-group"></div>
+
+		<div class="form-group">
+			<input class="form-control i18n-text" name="employeeId" type="text" placeholder="id" value="">
+		</div>
+
+		<div class="form-group">
+			<input class="form-control i18n-text" name="name" type="text" placeholder="name" value="">
+		</div>
+		
+		<div class="form-group">
+			<input class="form-control" name="roleId"  type="number" placeholder="角色编号，1是管理员，2是HR" value="">
+		</div>
+		
+		<div class="form-group">
+			<input class="form-control" name="supervisor" type="text" placeholder="主管编号" value="">
+		</div>
+		
+		<div class="form-group">
+			<input class="form-control" name="supervisorName" type="text" placeholder="主管名称" value="">
+		</div>
+		
+		<div class="btn-panel">
+			<button id="loginBtn" class="btn btn-danger btn-block i18n-text" type="button">login</button>
+		</div>
+        
+        <!-- <div class="form-group">
+			<img src="../../theme/images/qywx_logo.png" >
+		</div> -->
+        
+        <div id="errorTip" class="text-center text-danger">
+			&nbsp;
+		</div>
+        
+		<div class="text-center">
+		    <div id="qywxLogin" style="background-image: url('../../theme/images/qywx_logo.png');
+		    background-position: 194px 69px;width: 51px; height: 41px;cursor: pointer;">&nbsp;</div>
+			<a href="#" class="i18n-text">forgot_password</a>
+		</div>
+	</div>
+</body>
+</html>

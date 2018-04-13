@@ -1,0 +1,39 @@
+curl -XPOST "http://192.168.30.248:9200/xiaoyu-log-stat/user/_mapping?pretty" -d'
+{
+"user" : {
+ "properties" : {
+  "uuid" : {
+   "type" : "string",
+   "index" : "not_analyzed"
+  },
+  "company" : {
+   "type" : "string",
+   "index" : "not_analyzed"
+  },
+  "coversion" : {
+   "type" : "string",
+   "index" : "not_analyzed" 
+  },
+  "appversion" : {
+   "type" : "string",
+   "index" : "not_analyzed"
+  },
+  "logdate" : {
+   "format": "yyyy-MM-dd HH:mm:ss",
+   "type": "date"
+  },
+  "ip" : {
+   "type" : "string",
+   "index" : "not_analyzed"
+  },
+  "kernelVsn" : {
+   "index" : "not_analyzed",
+   "type" : "string"
+  },
+  "deviceModel" : {
+   "index" : "not_analyzed",
+   "type" : "string"
+  }
+ }
+}
+}'

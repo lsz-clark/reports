@@ -1,0 +1,31 @@
+curl -XPOST "http://192.168.30.248:9200/xiaoyu-log-stat/dayuser/_mapping?pretty" -d'
+{
+"dayuser" : {
+ "properties" : {
+  "uuid" : {
+   "type" : "string",
+   "index" : "not_analyzed"
+  },
+  "company" : {
+   "type" : "string",
+   "index" : "not_analyzed"
+  },
+  "coversion" : {
+   "type" : "string",
+   "index" : "not_analyzed" 
+  },
+  "opCommandType" : {
+   "index" : "not_analyzed",
+   "type" : "long"
+  },
+  "logdate" : {
+   "format": "yyyy-MM-dd HH:mm:ss",
+   "type": "date"
+  },
+  "ip" : {
+   "type" : "string",
+   "index" : "not_analyzed"
+  }
+ }
+}
+}'

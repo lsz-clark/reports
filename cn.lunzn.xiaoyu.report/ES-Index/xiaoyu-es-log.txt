@@ -1,0 +1,66 @@
+curl -XPOST "http://192.168.30.248:9200/xiaoyu-inteface-log"
+
+curl -XPUT http://192.168.30.248:9200/xiaoyu-inteface-log/_settings/ -d '{ "index" : { "max_result_window" : 2147483647}}'   
+
+curl -XPOST "http://192.168.30.248:9200/xiaoyu-inteface-log/log/_mapping?pretty" -d ' 
+{
+"log":{
+    "properties":{
+        "iP" : {
+            "index" : "not_analyzed",
+            "type" : "string"
+        },
+        "type" : {
+            "type" : "string"
+        },
+        "uuid" : {
+            "index" : "not_analyzed",
+            "type" : "string"
+        },
+        "logdate" : {
+            "format" : "yyyy-MM-dd HH:mm:ss",
+            "type" : "date"
+        },
+        "appversion" : {
+            "index" : "not_analyzed",
+            "type" : "string"
+        },
+        "kernelVsn" : {
+            "index" : "not_analyzed",
+            "type" : "string"
+        },
+        "A" : {
+            "index" : "not_analyzed",
+            "type" : "string"
+        },
+        "B" : {
+            "index" : "not_analyzed",
+            "type" : "string"
+        },
+        "opToWin" : {
+            "index" : "not_analyzed",
+            "type" : "string"
+        },
+        "company" : {
+            "index" : "not_analyzed",
+            "type" : "string"
+        },
+        "interfaceName" : {
+            "index" : "not_analyzed",
+            "type" : "string"
+        },
+        "opCommandType" : {
+            "index" : "not_analyzed",
+            "type" : "long"
+        },
+        "coversion" : {
+            "index" : "not_analyzed",
+            "type" : "string"
+        },
+        "deviceModel" : {
+            "index" : "not_analyzed",
+            "type" : "string"
+        }
+    }
+}
+}'
